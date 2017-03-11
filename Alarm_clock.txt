@@ -1,0 +1,3272 @@
+include irvine16.inc
+
+include macros.inc
+cout macro msg
+push ax
+push dx
+    mov ah, 09h
+    lea dx, msg
+    int 21h
+pop dx
+pop ax	
+    endm
+
+.data
+fsize word ?
+
+Clrkeyboard proto, ScanCode:byte
+
+
+;************updated form**************
+str1 byte "|",0
+str2 byte "_",0
+;**************************************
+Esc_key=1
+var1 byte ?
+var2 byte ?
+var3 byte ?
+val byte ?
+staric byte "*",0
+mint word ?
+hrss word ?
+;time systemtime <>
+st_sec  word ?
+st_mint word ?
+st_hour word ?
+count byte 1
+PROMPT  DB  'Current System Time is : $'     
+TIME    DB  '00:00:00$'        ; time format hr:min:sec
+;////////////////requirmnts for file/////
+file BYTE "output.txt", 0
+filebuffer BYTE 555 DUP(?)
+
+.code
+Main PROC
+mov ax,@data
+mov ds,ax
+call pal
+call output
+
+call readint	
+call clrscr
+supper:
+
+ call clrscr
+	mov ax,2500
+	call delay
+call pal
+xor bx,bx
+xor cx,cx
+xor dx,dx
+xor ax,ax
+call clrscr
+
+     mov fsize,0000 
+     call pal	 
+     LEA si, TIME                 ; BX=offset address of string TIME
+
+
+     CALL GET_TIME    
+     mov dh ,00								
+     mov hrss,dx	 ; call the procedure GET_TIME
+ pusha
+     mov ah,09h
+     mov bl,0eh
+     mov cx, 33
+      int 10h
+    LEA DX, PROMPT               ; DX=offset address of string PROMPT
+     MOV AH, 09H                  ; print the string PROMPT
+     INT 21H                      
+ 
+	 	 
+     LEA DX, TIME                 ; DX=offset address of string TIME
+     MOV AH, 09H                  ; print the string TIME
+     INT 21H
+
+     
+
+
+
+
+;///////////////
+
+call crlf
+;///////////////
+     
+     mov ah,09h
+     mov bl,0eh
+     mov cx, 600
+     int 10h										
+mwrite <0dh,0ah, "set seconds for Alarm :">										
+a0:
+call readInt
+call crlf
+.if ax>59
+mwrite<0dh,0ah,"Invalid, Enter seconds again : ">
+
+jmp a0
+.endif
+mov st_sec,ax
+mwrite <0dh,0ah, "set minutes for Alarm : ">	
+
+a1:
+call readInt
+call crlf
+.if ax>59
+mwrite<0dh,0ah,"Invalid, Enter minutes again : ">
+
+jmp a1
+.endif
+mov st_mint,ax
+mwrite <0dh,0ah, "set hours for Alarm : ">	
+
+a2:
+call readInt
+call crlf
+.if ax>24
+mwrite<0dh,0ah,"Invalid, Enter hours again : ">
+
+jmp a2
+.endif
+mov st_hour,ax
+
+call clrscr
+
+popa
+;//////////////////////////*
+ 
+ 
+ ;call randomize
+ ;mov ax,16
+ ;inc al
+ ;call randomrange
+;call bgclr
+mov fsize,1
+call pal
+;/////////////////////////////////////////////////////////////////////////////////////////
+                    ; Time Loop
+;/////////////////////////////////////////////////////////////////////////////////////////
+ 
+HRS:
+ 
+
+ 
+.if count==2
+call pal
+.endif
+mov count,1
+ 
+  
+
+.if hrss == 0
+mov var1,1
+mov var2,2
+mov var3,3
+call zero
+mov var1,4
+mov var2,5
+mov var3,6
+call zero
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+call crlf
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss ==1
+mov var1,1
+mov var2,2
+mov var3,3
+call zero
+mov var1,4
+mov var2,5
+mov var3,6
+call onee
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+call crlf
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+call crlf
+;*************************
+;/////
+.elseif hrss==2
+mov var1,1
+mov var2,2
+mov var3,3
+call zero
+mov var1,4
+mov var2,5
+mov var3,6
+call twoo
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==3
+mov var1,1
+mov var2,2
+mov var3,3
+call zero
+mov var1,4
+mov var2,5
+mov var3,6
+call thrree
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==4
+mov var1,1
+mov var2,2
+mov var3,3
+call zero
+mov var1,4
+mov var2,5
+mov var3,6
+call fourr 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==5
+mov var1,1
+mov var2,2
+mov var3,3
+call zero
+mov var1,4
+mov var2,5
+mov var3,6
+call fivve
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==6
+mov var1,1
+mov var2,2
+mov var3,3
+call zero
+mov var1,4
+mov var2,5
+mov var3,6
+call siix 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==7
+mov var1,1
+mov var2,2
+mov var3,3
+call zero
+mov var1,4
+mov var2,5
+mov var3,6
+call sevven
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==8
+mov var1,1
+mov var2,2
+mov var3,3
+call zero
+mov var1,4
+mov var2,5
+mov var3,6
+call eightt
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==9
+mov var1,1
+mov var2,2
+mov var3,3
+call zero
+mov var1,4
+mov var2,5
+mov var3,6
+call ninee 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==10
+mov var1,1
+mov var2,2
+mov var3,3
+call onee
+mov var1,4
+mov var2,5
+mov var3,6
+call zero 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==11
+mov var1,1
+mov var2,2
+mov var3,3
+call onee
+mov var1,4
+mov var2,5
+mov var3,6
+call onee 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==12
+mov var1,1
+mov var2,2
+mov var3,3
+call onee
+mov var1,4
+mov var2,5
+mov var3,6
+call twoo 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov edx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==13
+mov var1,1
+mov var2,2
+mov var3,3
+call onee
+mov var1,4
+mov var2,5
+mov var3,6
+call thrree 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==14
+mov var1,1
+mov var2,2
+mov var3,3
+call onee
+mov var1,4
+mov var2,5
+mov var3,6
+call fourr 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+
+;/////
+.elseif hrss==15
+mov var1,1
+mov var2,2
+mov var3,3
+call onee
+mov var1,4
+mov var2,5
+mov var3,6
+call fivve 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==16
+mov var1,1
+mov var2,2
+mov var3,3
+call onee
+mov var1,4
+mov var2,5
+mov var3,6
+call siix 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==17
+mov var1,1
+mov var2,2
+mov var3,3
+call onee
+mov var1,4
+mov var2,5
+mov var3,6
+call sevven
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==18
+mov var1,1
+mov var2,2
+mov var3,3
+call onee
+mov var1,4
+mov var2,5
+mov var3,6
+call eightt 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==19
+mov var1,1
+mov var2,2
+mov var3,3
+call onee
+mov var1,4
+mov var2,5
+mov var3,6
+call ninee 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==20
+mov var1,1
+mov var2,2
+mov var3,3
+call twoo
+mov var1,4
+mov var2,5
+mov var3,6
+call zero 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==21
+mov var1,1
+mov var2,2
+mov var3,3
+call twoo
+mov var1,4
+mov var2,5
+mov var3,6
+call onee 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==22
+mov var1,1
+mov var2,2
+mov var3,3
+call twoo
+mov var1,4
+mov var2,5
+mov var3,6
+call twoo 
+mov dh,9
+mov dl,7
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==23
+mov var1,1
+mov var2,2
+mov var3,3
+call twoo
+mov var1,4
+mov var2,5
+mov var3,6
+call thrree 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.elseif hrss==24
+mov var1,1
+mov var2,2
+mov var3,3
+call twoo
+mov var1,4
+mov var2,5
+mov var3,6
+call fourr 
+;**************************
+mov dh,9
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,7
+call gotoxy
+mov dx,offset staric
+call writestring
+;*************************
+;/////
+.endif
+
+minuts:		;///////////////////////for MINUTS /////////////////////////////
+mov ch,00
+.if cx==0
+
+mov var1,8
+mov var2,9
+mov var3,10
+call zero
+mov var1,11
+mov var2,12
+mov var3,13
+call zero
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov edx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov edx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==1
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call zero
+mov var3,13
+call onee
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==2
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call zero
+mov var1,11
+mov var2,12
+mov var3,13
+call twoo
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==3
+
+mov var1,8
+mov var2,9
+mov var3,10
+call zero
+mov var1,11
+mov var2,12
+mov var3,13
+call thrree
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==4
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call zero
+mov var1,11
+mov var2,12
+mov var3,13
+call fourr
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==5
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call zero
+mov var1,11
+mov var2,12
+mov var3,13
+call fivve
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==6
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call zero
+mov var1,11
+mov var2,12
+mov var3,13
+call siix
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==7
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call zero
+mov var1,11
+mov var2,12
+mov var3,13
+call sevven
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==8
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call zero
+mov var1,11
+mov var2,12
+mov var3,13
+call eightt
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==9
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call zero
+mov var1,11
+mov var2,12
+mov var3,13
+call ninee
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==10
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call onee
+mov var1,11
+mov var2,12
+mov var3,13
+call zero
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==11
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call onee
+mov var1,11
+mov var2,12
+mov var3,13
+call onee
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==12
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call onee
+mov var1,11
+mov var2,12
+mov var3,13
+call twoo
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==13
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call onee
+mov var1,11
+mov var2,12
+mov var3,13
+call thrree
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==14
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call onee
+mov var1,11
+mov var2,12
+mov var3,13
+call fourr
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==15
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call onee
+mov var1,11
+mov var2,12
+mov var3,13
+call fivve
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==16
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call onee
+mov var1,11
+mov var2,12
+mov var3,13
+call siix
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==17
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call onee
+mov var1,11
+mov var2,12
+mov var3,13
+call sevven
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==18
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call onee
+mov var1,11
+mov var2,12
+mov var3,13
+call eightt
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==19
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call onee
+mov var1,11
+mov var2,12
+mov var3,13
+call ninee
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==20
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call twoo
+mov var1,11
+mov var2,12
+mov var3,13
+call zero
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==21
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call twoo
+mov var1,11
+mov var2,12
+mov var3,13
+call onee
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==22
+
+mov var1,8
+mov var2,9
+mov var3,10
+call twoo
+mov var1,11
+mov var2,12
+mov var3,13
+call twoo
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==23
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call twoo
+mov var1,11
+mov var2,12
+mov var3,13
+call thrree
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==24
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call twoo
+mov var1,11
+mov var2,12
+mov var3,13
+call fourr
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==25
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call twoo
+mov var1,11
+mov var2,12
+mov var3,13
+call fivve
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==26
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call twoo
+mov var1,11
+mov var2,12
+mov var3,13
+call siix
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==27
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call twoo
+mov var1,11
+mov var2,12
+mov var3,13
+call sevven
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==28
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call twoo
+mov var1,11
+mov var2,12
+mov var3,13
+call eightt
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==29
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call twoo
+mov var1,11
+mov var2,12
+mov var3,13
+call ninee
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==30
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call thrree
+mov var1,11
+mov var2,12
+mov var3,13
+call zero
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==31
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call thrree
+mov var1,11
+mov var2,12
+mov var3,13
+call onee
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==32
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call thrree
+mov var1,11
+mov var2,12
+mov var3,13
+call twoo
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==33
+
+mov var1,8
+mov var2,9
+mov var3,10
+call thrree
+mov var1,11
+mov var2,12
+mov var3,13
+call thrree
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==34
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call thrree
+mov var1,11
+mov var2,12
+mov var3,13
+call fourr
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==35
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call thrree
+mov var1,11
+mov var2,12
+mov var3,13
+call fivve
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==36
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call thrree
+mov var1,11
+mov var2,12
+mov var3,13
+call siix
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==37
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call thrree
+mov var1,11
+mov var2,12
+mov var3,13
+call sevven
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==38
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call thrree
+mov var1,11
+mov var2,12
+mov var3,13
+call eightt
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==39
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call thrree
+mov var1,11
+mov var2,12
+mov var3,13
+call ninee
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==40
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fourr
+mov var1,11
+mov var2,12
+mov var3,13
+call zero
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==41
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fourr
+mov var1,11
+mov var2,12
+mov var3,13
+call onee
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==42
+
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fourr
+mov var1,11
+mov var2,12
+mov var3,13
+call twoo
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==43
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fourr
+mov var1,11
+mov var2,12
+mov var3,13
+call thrree
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==44
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fourr
+mov var1,11
+mov var2,12
+mov var3,13
+call fourr
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==45
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fourr
+mov var1,11
+mov var2,12
+mov var3,13
+call fivve
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==46
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fourr
+mov var1,11
+mov var2,12
+mov var3,13
+call siix
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==47
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fourr
+mov var1,11
+mov var2,12
+mov var3,13
+call sevven
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==48
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fourr
+mov var1,11
+mov var2,12
+mov var3,13
+call eightt
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==49
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fourr
+mov var1,11
+mov var2,12
+mov var3,13
+call ninee
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==50
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fivve
+mov var1,11
+mov var2,12
+mov var3,13
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+call zero
+.elseif cx==51
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fivve
+mov var1,11
+mov var2,12
+mov var3,13
+call onee
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==52
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fivve
+mov var1,11
+mov var2,12
+mov var3,13
+call twoo
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==53
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fivve
+mov var1,11
+mov var2,12
+mov var3,13
+call thrree
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==54
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fivve
+mov var1,11
+mov var2,12
+mov var3,13
+call fourr
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==55
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fivve
+mov var1,11
+mov var2,12
+mov var3,13
+call fivve
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==56
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fivve
+mov var1,11
+mov var2,12
+mov var3,13
+call siix
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==57
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fivve
+mov var1,11
+mov var2,12
+mov var3,13
+call sevven
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==58
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fivve
+mov var1,11
+mov var2,12
+mov var3,13
+call eightt
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.elseif cx==59
+
+mov var1,8
+mov var2,9
+mov var3,10
+call fivve
+mov var1,11
+mov var2,12
+mov var3,13
+call ninee
+;@@@@@@@@@@@@@@@@@@@@@@@
+mov dh,9
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+mov dh,10
+mov dl,14
+call gotoxy
+mov dx,offset staric
+call writestring
+;@@@@@@@@@@@@@@@@@@@@@@@
+.endif
+			;//////////////////////////*
+
+
+
+
+			
+sec:	;((FOR TO PRINT THE SECONDES));
+.if bx==0
+inc count
+mov var1,15
+mov var2,16
+mov var3,17
+call zero
+mov var1,18
+mov var2,19
+mov var3,20
+
+call zero
+.elseif bx==1
+
+mov var1,15
+mov var2,16
+mov var3,17
+call zero
+mov var3,20
+call onee
+.elseif bx==2
+
+mov var1,15
+mov var2,16
+mov var3,17
+call zero
+mov var1,18
+mov var2,19
+mov var3,20
+call twoo
+.elseif bx==3
+
+mov var1,15
+mov var2,16
+mov var3,17
+call zero
+
+mov var2,19
+mov var3,20
+call thrree
+.elseif bx==4
+
+mov var1,15
+mov var2,16
+mov var3,17
+call zero
+mov var1,18
+mov var2,19
+mov var3,20
+call fourr
+.elseif bx==5
+;inc count
+mov var1,15
+mov var2,16
+mov var3,17
+call zero
+mov var1,18
+mov var2,19
+mov var3,20
+call fivve
+.elseif bx==6
+
+mov var1,15
+mov var2,16
+mov var3,17
+call zero
+mov var1,18
+mov var2,19
+mov var3,20
+call siix
+.elseif bx==7
+
+mov var1,15
+mov var2,16
+mov var3,17
+call zero
+
+mov var2,19
+mov var3,20
+call sevven
+.elseif bx==8
+
+mov var1,15
+mov var2,16
+mov var3,17
+call zero
+mov var1,18
+mov var2,19
+mov var3,20
+call eightt
+.elseif bx==9
+
+mov var1,15
+mov var2,16
+mov var3,17
+call zero
+mov var1,18
+mov var2,19
+mov var3,20
+call ninee
+.endif
+
+	.if bx == 10
+	inc count
+	mov var3,17
+	call onee
+	mov var1,18
+	mov var2,19
+	mov var3,20
+	call zero
+	.elseif bx ==11	
+	mov var3,17
+	call onee
+	mov var3,20
+	call onee
+	.elseif bx ==12
+	
+	mov var3,17
+	call onee
+	mov var1,18
+	mov var2,19
+	mov var3,20
+	call twoo
+	.elseif bx ==13
+	
+		mov var3,17
+		call onee
+		mov var1,18
+		mov var2,19
+		mov var3,20
+	call thrree
+	.elseif bx ==14	
+	
+	mov var3,17
+			call onee
+			mov var1,18
+			mov var2,19
+			mov var3,20
+	call fourr
+	.elseif bx ==15	
+	
+	mov var3,17
+			call onee
+			mov var1,18
+			mov var2,19
+			mov var3,20
+	call fivve
+	.elseif bx ==16	
+			mov var3,17
+			call onee
+			mov var1,18
+			mov var2,19
+			mov var3,20
+	call siix
+	.elseif bx ==17	
+			mov var3,17
+			call onee
+			mov var1,18
+			mov var2,19
+			mov var3,20
+	call sevven
+	.elseif bx ==18	
+			mov var3,17
+			call onee
+			mov var1,18
+			mov var2,19
+			mov var3,20
+	call eightt
+	.elseif bx ==19	
+			mov var3,17
+			call onee
+			mov var1,18
+			mov var2,19
+			mov var3,20
+	call ninee
+	.elseif bx ==20	
+			mov var1,15
+			mov var2,16
+			mov var3,17
+			call twoo
+			mov var1,18
+			mov var2,19
+			inc count
+			mov var3,20
+	call zero
+	.elseif bx ==21	
+				mov var1,15
+				mov var2,16
+				mov var3,17
+				call twoo
+				mov var1,18
+				mov var2,19
+				mov var3,20
+	call onee
+	.elseif bx ==22	
+				
+				mov var1,15
+				mov var2,16
+				mov var3,17
+				call twoo
+				mov var1,18
+				mov var2,19
+				mov var3,20
+	call twoo
+	.elseif bx ==23	
+				mov var1,15
+				mov var2,16
+				mov var3,17
+				call twoo
+				mov var1,18
+				mov var2,19
+				mov var3,20
+	call thrree
+	.elseif bx ==24	
+				mov var1,15
+				mov var2,16
+				mov var3,17
+				call twoo
+				mov var1,18
+				mov var2,19
+				mov var3,20
+	call fourr
+	.elseif bx ==25	
+				;inc count
+				mov var1,15
+				mov var2,16
+				mov var3,17
+				call twoo
+				mov var1,18
+				mov var2,19
+				mov var3,20
+	call fivve
+	.elseif bx ==26	
+				mov var1,15
+				mov var2,16
+				mov var3,17
+				call twoo
+				mov var1,18
+				mov var2,19
+				mov var3,20
+	call siix
+	.elseif bx ==27	
+				mov var1,15
+				mov var2,16
+				mov var3,17
+				call twoo
+				mov var1,18
+				mov var2,19
+				mov var3,20
+	call sevven
+	;//////////
+	.elseif bx ==28	
+					mov var1,15
+					mov var2,16
+					mov var3,17
+					call twoo
+					mov var1,18
+					mov var2,19
+					mov var3,20
+		call eightt
+		.elseif bx ==29	
+					mov var1,15
+					mov var2,16
+					mov var3,17
+					call twoo
+					mov var1,18
+					mov var2,19
+					mov var3,20
+		call ninee
+		.elseif bx ==30	
+				inc count
+				mov var1,15
+					mov var2,16
+					mov var3,17
+					call thrree
+					mov var1,18
+					mov var2,19
+					mov var3,20
+		call zero
+	;/////////////////31////////////
+	
+		.elseif bx == 31
+		
+					mov var1,15
+					mov var2,16
+					mov var3,17
+					call thrree
+					mov var1,18
+					mov var2,19
+					mov var3,20
+		call onee
+		.elseif bx ==32	
+		mov var1,15
+							mov var2,16
+							mov var3,17
+							call thrree
+							mov var1,18
+							mov var2,19
+							mov var3,20
+		call twoo
+		.elseif bx ==33	
+		mov var1,15
+							mov var2,16
+							mov var3,17
+							call thrree
+							mov var1,18
+							mov var2,19
+							mov var3,20
+		call thrree
+		.elseif bx ==34	
+			mov var1,15
+								mov var2,16
+								mov var3,17
+								call thrree
+								mov var1,18
+								mov var2,19
+								mov var3,20
+		call fourr
+		.elseif bx ==35	
+	                     			;inc count
+									mov var1,15
+									mov var2,16
+									mov var3,17
+									call thrree
+									mov var1,18
+									mov var2,19
+									mov var3,20
+		call fivve
+		.elseif bx ==36	
+				mov var1,15
+									mov var2,16
+									mov var3,17
+									call thrree
+									mov var1,18
+									mov var2,19
+									mov var3,20
+		call siix
+		.elseif bx ==37	
+				mov var1,15
+									mov var2,16
+									mov var3,17
+									call thrree
+									mov var1,18
+									mov var2,19
+									mov var3,20
+		call sevven
+		.elseif bx ==38	
+				mov var1,15
+									mov var2,16
+									mov var3,17
+									call thrree
+									mov var1,18
+									mov var2,19
+									mov var3,20
+		call eightt
+		.elseif bx ==39	
+				mov var1,15
+									mov var2,16
+									mov var3,17
+									call thrree
+									mov var1,18
+									mov var2,19
+									mov var3,20
+		call ninee
+		.elseif bx ==40	
+				mov var1,15
+									inc count
+									mov var2,16
+									mov var3,17
+									call fourr
+									mov var1,18
+									mov var2,19
+									mov var3,20
+		call zero
+		.elseif bx ==41	
+				mov var1,15
+				mov var2,16
+				mov var3,17
+				call fourr
+				mov var1,18
+				mov var2,19
+				mov var3,20
+		call onee
+		.elseif bx ==42	
+					mov var1,15
+					mov var2,16
+					mov var3,17
+					call fourr
+					mov var1,18
+					mov var2,19
+					mov var3,20
+		call twoo
+		.elseif bx ==43	
+					mov var1,15
+					mov var2,16
+					mov var3,17
+					call fourr
+					mov var1,18
+					mov var2,19
+					mov var3,20
+		call thrree
+		.elseif bx ==44	
+					mov var1,15
+					mov var2,16
+					mov var3,17
+					call fourr
+					mov var1,18
+					mov var2,19
+					mov var3,20
+		call fourr
+		.elseif bx ==45	
+              ; inc count				
+				mov var1,15
+					mov var2,16
+					mov var3,17
+					call fourr
+					mov var1,18
+					mov var2,19
+					mov var3,20
+		call fivve
+		.elseif bx ==46	
+					mov var1,15
+					mov var2,16
+					mov var3,17
+					call fourr
+					mov var1,18
+					mov var2,19
+					mov var3,20
+		call siix
+		.elseif bx ==47	
+					mov var1,15
+					mov var2,16
+					mov var3,17
+					call fourr
+					mov var1,18
+					mov var2,19
+					mov var3,20
+		call sevven
+		.elseif bx ==48	
+					mov var1,15
+					mov var2,16
+					mov var3,17
+					call fourr
+					mov var1,18
+					mov var2,19
+					mov var3,20
+		call eightt
+		;//////////
+		.elseif bx ==49	
+						mov var1,15
+						mov var2,16
+						mov var3,17
+						call fourr
+						mov var1,18
+						mov var2,19
+						mov var3,20
+			call ninee
+			.elseif bx ==50	
+						inc count
+						mov var1,15
+						mov var2,16
+						mov var3,17
+						call fivve
+						mov var1,18
+						mov var2,19
+						mov var3,20
+			call zero
+			.elseif bx ==51	
+						mov var1,15
+						mov var2,16
+						mov var3,17
+						call fivve
+						mov var1,18
+						mov var2,19
+						mov var3,20
+			call onee
+						
+	
+	;//////////////////end/////////
+	
+	;*******************************
+		.elseif bx ==52	
+					mov var1,15
+										mov var2,16
+										mov var3,17
+										call fivve
+										mov var1,18
+										mov var2,19
+										mov var3,20
+			call twoo
+			.elseif bx ==53	
+					mov var1,15
+					mov var2,16
+					mov var3,17
+					call fivve
+					mov var1,18
+					mov var2,19
+					mov var3,20
+			call thrree
+			.elseif bx ==54	
+						mov var1,15
+						mov var2,16
+						mov var3,17
+						call fivve
+						mov var1,18
+						mov var2,19
+						mov var3,20
+			call fourr
+			.elseif bx ==55
+                       ; inc count			
+						mov var1,15
+						mov var2,16
+						mov var3,17
+						call fivve
+						mov var1,18
+						mov var2,19
+						mov var3,20
+			call fivve
+			.elseif bx ==56	
+						mov var1,15
+						mov var2,16
+						mov var3,17
+						call fivve
+						mov var1,18
+						mov var2,19
+						mov var3,20
+			call siix
+			.elseif bx ==57	
+						mov var1,15
+						mov var2,16
+						mov var3,17
+						call fivve
+						mov var1,18
+						mov var2,19
+						mov var3,20
+			call sevven
+			.elseif bx ==58	
+						mov var1,15
+						mov var2,16
+						mov var3,17
+						call fivve
+						mov var1,18
+						mov var2,19
+						mov var3,20
+						
+			call eightt
+			.elseif bx ==59	
+						mov var1,15
+						mov var2,16
+						mov var3,17
+						call fivve
+						mov var1,18
+						mov var2,19
+						mov var3,20
+			call ninee
+			
+.endif		;**************************secs Ends*****************************
+	
+	
+	
+	
+
+
+
+.if bx==59
+mov bx,0
+	
+	.IF ECX==59
+	MOV ECX,0
+		
+	mov ax,hrss
+	inc ax
+			.if ax==24
+			mov ax,1
+			mov hrss,ax
+			xor bx,bx
+			xor cx,cx
+			
+			jmp HRS
+			.endif
+	mov hrss,ax
+	mov dx,hrss
+	jmp cros2 		;it crosses the increament when cx=59
+	.ENDIF
+
+inc cx
+cros2:
+jmp cros1	;it crosses the increament when bx=59
+.endif
+
+inc bx
+mov dx,hrss
+cros1:
+mov ax,2000
+call delay
+mov ax,cx
+.if (bx==st_sec) && (ax==st_mint) && (dx==st_hour)		;compared to the set time by the user 
+			mov dh,13
+			mov dl,0
+			call gotoxy
+			mwrite <"the time you set was : ",0dh,0ah>
+
+			;mov dx,offset yours_set_time
+			;call writestring
+			;call crlf
+
+			mov dh,14
+			mov dl,1
+			call gotoxy
+			mov ax,st_hour
+			sub ax,12
+			call writedec
+			mov dl,4
+			call gotoxy
+			mwrite ':'
+			
+			mov dh,14
+			mov dl,5
+			call gotoxy
+			mov ax,st_mint
+			call writedec
+			mov dl,7
+			call gotoxy
+			mwrite ':'
+			
+			mov dh,14
+			mov dl,8
+			call gotoxy
+			mov ax,st_sec
+			call writedec
+			call crlf
+			mwrite<0dh,0ah,"Alarm		Alarm		Alarm ">
+			
+;call bgclr
+;....................................................
+			
+			call crlf 
+        mov     al, 182         ; Prepare the speaker for the
+        out     43h, al         ;  note.
+        mov     ax, 2711        ; Frequency number (in decimal)
+        out     42h, al         ; Output low byte.
+        mov     al, ah          ; Output high byte.
+        out     42h, al 
+        in      al, 61h         ; Turn on note (get value from
+                                ;  port 61h).
+        or      al, 00000011b   ; Set bits 1 and 0.
+        out     61h, al         ; Send new value.
+        mov     bx, 25                          ;  for middle C.
+		pause1:
+        mov     cx, 65535
+       pause2:
+        dec     cx
+        jne     pause2
+        dec     bx
+        jne     pause1
+		mov al,10h
+		int 16h
+		push ax
+		call readint
+		call clrscr
+		pop ax
+		;Turn:
+          in      al, 61h         ; Turn off note (get value from
+                                ;  port 61h).
+        and     al, 11111100b   ; Reset bits 1 and 0.
+        out     61h, al         ; Send new value.
+jmp QUIT
+.endif
+mov dh,0
+mov dl,1
+call clrscr
+call gotoxy
+mwrite "press Esc key to discard "
+
+INVOKE Clrkeyboard,Esc_key
+
+jnz HRS
+jmp now
+
+
+;%%%%%%%%%%%%%%%%%%%%%%%%%%Printing the set time%%%%%%%%%%%
+QUIT:
+
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+call crlf
+call crlf
+now:
+call clrscr
+ pusha
+     mov ah,09h
+     mov bl,0bh
+     mov cx, 40
+     int 10h	
+    popa
+mwrite "Do You Want To Reset it again :: Y/N ::  "
+
+call readchar
+
+call crlf
+.if al=='y' || al=='Y'
+jmp supper
+
+.elseif al=='n'|| al=='N'
+
+jmp next
+.endif
+next:
+call crlf
+call crlf
+exit
+main endp
+;-------------------------------
+Clrkeyboard proc,
+ScanCode:byte
+push ax
+L1:
+mov ah,11h
+Int 16h
+jz nokey
+mov ah,10h
+Int 16h
+cmp ah,Scancode
+je Q
+jmp L1
+nokey:
+OR al,1
+Q:
+pop ax
+ret
+Clrkeyboard endp
+;-------------------------------
+;*******************digits************************;
+
+;////////////////////////////zero///////////////////
+zero proc
+mov dh,8
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+
+mov dh,9
+mov dl,var1
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,10
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,10
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+mov dh,10
+mov dl,var1
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,9
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+call crlf
+call crlf
+call crlf
+ret
+zero endp
+;**********************one*******************;
+onee proc
+xor dx,dx
+mov dh,9
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+
+mov dh,10
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+ret
+onee endp
+;//////////////////////////two//////////////////////////
+twoo proc
+mov dh,8
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+
+mov dh,9
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,9
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+mov dh,10
+mov dl,var1
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,10
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+ret
+twoo endp
+;///////////////////////////three////////////////////////////////
+thrree proc
+mov dh,8
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+
+mov dh,9
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,9
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+mov dh,10
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,10
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+call crlf
+ret
+thrree endp
+;/////////////////////////four///////////////////////////
+fourr proc
+mov dh,9
+mov dl,var1
+call gotoxy
+mov dx,offset str1
+call writestring
+
+mov dh,9
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+mov dh,9
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,10
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+ret
+fourr endp
+;///////////////////////five///////////////////////////
+fivve proc
+mov dh,8
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+
+mov dh,9
+mov dl,var1
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,9
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+mov dh,10
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,10
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+call crlf
+ret
+fivve endp
+;///////////////////////////////////six/////////////////////////////
+siix proc
+mov dh,8
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+
+mov dh,9
+mov dl,var1
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,9
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+mov dh,10
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,10
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+mov dh,10
+mov dl,var1
+call gotoxy
+mov dx,offset str1
+call writestring
+call crlf
+ret
+siix endp
+;////////////////////////////////////////seven/////////////////////////
+sevven proc
+mov dh,8
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+
+mov dh,9
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,10
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+ret
+sevven endp
+;//////////////////////////eight////////////////////////////
+eightt proc
+mov dh,8
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+
+mov dh,9
+mov dl,var1
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,9
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+mov dh,10
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,10
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+mov dh,10
+mov dl,var1
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,9
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+call crlf
+call crlf
+call crlf
+ret
+eightt endp
+;////////////////////////////////////////nine//////////////
+ninee proc
+mov dh,8
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+
+mov dh,9
+mov dl,var1
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,9
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+mov dh,10
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+mov dh,10
+mov dl,var2
+call gotoxy
+mov dx,offset str2
+call writestring
+mov dh,9
+mov dl,var3
+call gotoxy
+mov dx,offset str1
+call writestring
+call crlf
+call crlf
+call crlf
+ret
+ninee endp
+
+
+
+;**************************************************************************;
+ ;------------------------------  GET_TIME  --------------------------------;
+ ;**************************************************************************;
+
+   GET_TIME PROC
+    ; this procedure will get the current system time 
+    ; input : BX=offset address of the string TIME
+    ; output : BX=current time
+
+    PUSH AX                       ; PUSH AX onto the STACK
+    ;PUSH CX                       ; PUSH CX onto the STACK 
+    xor ax,ax
+    MOV AH, 2CH                   ; get the current system time
+    INT 21H                       
+
+    MOV AL, CH                    ; set AL=CH , CH=hours
+    ;xor dx,dx
+	mov dl,al
+	
+	
+	;aas
+	;call writeint
+	
+	CALL CONVERT                  ; call the procedure CONVERT
+    MOV [si], AX                  ; set [BX]=hr  , [BX] is pointing to hr
+                                  ; in the string TIME
+
+    MOV AL, CL                    ; set AL=CL , CL=minutes
+    CALL CONVERT                  ; call the procedure CONVERT
+    MOV [si+3], AX                ; set [si+3]=min  , 
+                                  ; in the string TIME
+                                           
+    MOV AL, Dh 
+ 	
+    mov bl,al
+                             	; set AL=DH , DH=seconds
+    CALL CONVERT                  ; call the procedure CONVERT
+    MOV [si+6], AX                ; set [si+6]=sec
+                                   ; in the string TIME
+                                                      
+    ;POP CX                        ; POP a value from STACK into CX
+    POP AX                        ; POP a value from STACK into AX
+
+    RET                           ; return control to the calling procedure
+   GET_TIME ENDP                  ; end of procedure GET_TIME
+
+ ;**************************************************************************;
+ ;-------------------------------  CONVERT  --------------------------------;
+ ;**************************************************************************;
+
+   CONVERT PROC 
+    ; this procedure will convert the given binary code into ASCII code
+    ; input : AL=binary code
+    ; output : AX=ASCII code
+
+    PUSH DX                       ; PUSH DX onto the STACK 
+
+    MOV AH, 0                     ; set AH=0
+    MOV DL, 10                    ; set DL=10
+    DIV DL                        ; set AX=AX/DL
+    OR AX, 3030H                  ; convert the binary code in AX into ASCII
+
+    POP DX                        ; POP a value from STACK into DX 
+
+    RET                           ; return control to the calling procedure
+   CONVERT ENDP                   ; end of procedure CONVERT
+
+ ;**************************************************************************;
+ ;--------------------------------------------------------------------------;
+ ;**************************************************************************;
+ pal PROC
+ 
+ push bx
+ 
+  .if fsize==1
+ mov ax,0001h
+ int 10h
+ .endif
+ 
+ mov ax,0014
+
+call randomrange
+.if al==7 || al==0bh || al==0eh
+ sub al,2
+.endif
+ mov bh,al
+ mov bl,0
+  mov ax,1000h
+  int 10h
+ ;mov bl,al
+; mov ax,0001
+ ;int 10h
+; mov ax,0030
+
+;call randomrange
+ ;mov bh,al
+ ;mov bl,
+  ;mov ax,1000h
+ 
+ pop bx
+
+ ret
+pal ENDP
+;///////////////////////////////////file/////
+ReadFile PROC, fileName:PTR BYTE, buffer:PTR BYTE, bufferSize:WORD
+	LOCAL fileHandle:WORD
+	;; open 4 reading
+	mov ah,3Dh
+	mov al,0
+	mov dx, fileName
+	int 21h
+	jc qt
+	mov fileHandle,ax
+	
+	
+	mov ah, 3Fh          ; reading
+	mov bx, fileHandle
+	mov cx, bufferSize
+	mov dx, buffer
+	int 21h
+	jc qt
+	
+	mov ah,3Eh       ;closing
+	mov bx,fileHandle
+	int 21h
+	ret
+qt: 
+   ret
+ReadFile ENDP
+
+
+
+output PROC
+	invoke ReadFile, ADDR file, ADDR filebuffer, LENGTHOF filebuffer
+	call Clrscr	
+		
+	mov dx, OFFSET filebuffer
+	call Writestring
+      
+	ret
+output ENDP
+ 
+
+end main
